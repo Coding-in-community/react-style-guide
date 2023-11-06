@@ -1,11 +1,11 @@
-# Referências - Ed.1, Rv.2
+# Referências - Ed.1, Rv.3
 
-## Sumário:
+## Sumário
 - Organização de arquivos
 - Modularização
 - Definição de componentes
 - Hierarquia
-- ~Uso de componentes~ (seção removida)
+- Uso de componentes
 - Nomenclatura
 - Referências
 
@@ -174,33 +174,68 @@ Embora o React não prescreva uma hierarquia rígida por definição, a adoção
 - **Definição:** Representam as páginas finais preenchidas com conteúdo real, apresentadas ao usuário.
 - **Exemplo:** Uma página de blog específica com conteúdo autêntico, imagens e comentários.
 
+## Uso de Componentes com Base no Design Adaptado
+
+### Exemplos
+
+Para oferecer uma visão mais clara sobre a prática de composição de componentes no React, esta seção fornece exemplos ilustrativos que demonstram a escolha apropriada de componentes na construção de elementos da interface do usuário. Aqui, o termo `common` é utilizado para descrever componentes fundamentais que são essencialmente constituídos por estilos e tags HTML. Estes podem ser independentes, possuindo seu próprio estado, ou podem existir puramente como elementos estáticos de UI. Esses exemplos têm o objetivo de orientar o desenvolvimento de componentes eficazes, mantendo a consistência e reutilização no design do sistema.
+
+#### Botão
+
+- **Common:** Um elemento clicável com estilos fundamentais.
+- **Composite:** Pode incluir funcionalidades como ícones ou indicadores de carregamento.
+
+#### Input
+
+- **Common:** Um campo de texto básico com estilos e validações elementares.
+- **Composite:** Combinado com rótulos, ícones de validação ou mensagens de erro.
+
+#### Formulário
+
+- **Composite:** Uma coleção de inputs, botões e mensagens de erro.
+- **Container:** Dentro de um contexto maior, controla a interação do formulário com outros elementos.
+
+#### Card
+
+- **Common:** Contém elementos como título, imagem e descrição.
+- **Composite:** Integra botões de ação ou sliders de imagem.
+
+#### Tabela
+
+- **Composite:** Inclui cabeçalho, linhas, células e elementos interativos como botões.
+- **Layout:** Organiza a tabela com filtros e controles adicionais como parte de um template.
+
+#### Barra de Navegação (Navbar)
+
+- **Composite:** Composto por links (base) e dropdowns (composite).
+- **Layout:** Faz parte de um cabeçalho mais amplo com identidade visual e outros controles de navegação.
+
+#### Dashboard
+
+- **Layout:** Agrega vários composites como gráficos e tabelas.
+- **Página:** Quando preenchido com dados reais no contexto da aplicação.
+
 ## Nomenclatura
 
 Todos os componentes devem possuir ao menos duas palavras. Componentes globais devem conter App ou Base como primeiro nome, enquanto componentes locais devem possuir o nome da página a qual pertencem 
 
 - AppButton (common component)
-- AppForm (compound component)
-- HomeNavbar (compound component)
+- AppForm (composite component)
+- HomeNavbar (composite component)
 - AboutLayout (layout component)
 - AppFormContainer (container component)
 - FormPage (page component)
 
 ## Referências 
 
-React Folder Structure 
-https://youtu.be/UUga4-z7b6s?si=_o43kFZ_SwcQshbc
+- **Estrutura de Pastas do React**: Um vídeo detalhando a estrutura de pastas para projetos React. Disponível em: [YouTube](https://youtu.be/UUga4-z7b6s).
 
-React Compound Components
-https://medium.com/unibuddy-technology-blog/compound-components-in-react-b04772f9eb58
+- **Componentes Compostos no React**: Discussão aprofundada sobre a utilização de componentes compostos em React. Leia mais em: [Medium - Unibuddy Technology Blog](https://medium.com/unibuddy-technology-blog/compound-components-in-react-b04772f9eb58).
 
-Atomic Design 
-https://medium.com/pretux/atomic-design-o-que-%C3%A9-como-surgiu-e-sua-import%C3%A2ncia-para-a-cria%C3%A7%C3%A3o-do-design-system-e3ac7b5aca2c
+- **Design Atômico**: Introdução e exploração do conceito de Design Atômico na criação de Design Systems. Detalhes disponíveis em: [Medium - Pretux](https://medium.com/pretux/atomic-design-o-que-%C3%A9-como-surgiu-e-sua-import%C3%A2ncia-para-a-cria%C3%A7%C3%A3o-do-design-system-e3ac7b5aca2c).
 
-Vue Style Guide
-https://vuejs.org/style-guide/
+- **Guia de Estilo do Vue**: Diretrizes oficiais de estilo para projetos Vue.js. Acesse o guia completo em: [Vue.js Style Guide](https://vuejs.org/style-guide/).
 
-AirBnB Style Guide
-https://github.com/airbnb/javascript
+- **Guia de Estilo do AirBnB para JavaScript**: Convenções de código recomendadas pela AirBnB para JavaScript e React. Confira o guia em: [GitHub - airbnb/javascript](https://github.com/airbnb/javascript).
 
-Vue for Large Projects
-https://vueschool.io/articles/vuejs-tutorials/how-to-structure-a-large-scale-vue-js-application/
+- **Vue para Projetos de Grande Escala**: Estratégias para estruturar aplicações Vue.js em larga escala. Artigo disponível em: [Vue School](https://vueschool.io/articles/vuejs-tutorials/how-to-structure-a-large-scale-vue-js-application/).
