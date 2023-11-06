@@ -1,22 +1,22 @@
-# Referências - Ed.1, Rv.0
+# Referências - Ed.1, Rv.1
 
 ## Sumário:
 - Organização de arquivos
 - Modularização
-- Tipo de componentes
-- Hierarquia
-- Uso de componentes
+- Definição de componentes (removido compound components)
+- ~Hierarquia~ (seção removida)
+- ~Uso de componentes~ (seção removida)
 - Nomenclatura
 - Referências
 
 ## Organização de arquivos 
 
-Podemos dividir o escopo dos componentes entre "global" e "local". Componentes globais são utilizados ao longo de todo aplicativo, e componentes locais são especificos a determinadas telas.
+A organização dos componentes pode ser dividida em dois escopos principais: "global" e "local". Os componentes globais são utilizados em todo o aplicativo, enquanto os locais são específicos para determinadas telas.
 
-Dito isso, essa lógica não se aplica apenas aos componentes. Podemos estender essa ideia para outras coisas como hooks, services, utils e uma sequência de outras subpastas, agrupando de acordo com seus determinados escopos. Para isso, utilizamos `shared` e 
-`features`.
+Essa divisão se estende para outros elementos como hooks, services, utils e outras subcategorias, que são agrupados de acordo com seus escopos específicos. Utilizamos `shared` para elementos de escopo global e `features` para elementos de escopo local.
 
-Exemplo de shared:
+### Exemplo de `shared`:
+
 ```sh
 src/
 |-- shared/
@@ -28,7 +28,8 @@ src/
 |-- app.js
 ```
 
-Exemplo de features:
+### Exemplo de `features`:
+
 ```sh
 src/
 |-- features/
@@ -46,148 +47,104 @@ src/
 |-- app.js
 ```
 
-Como é possivel perceber, `shared` e `features` compartilham da mesma organização, a unica diferença é de fato o escopo. Shared é **apenas mais uma feature**, mas com escopo global. Isso permite que:
-- O programador encontre os recursos globais mais facilmente
-- Seja mais simples para o programador entender a organização geral de outras features
+`Shared` e `features` compartilham a mesma estrutura organizacional, diferindo apenas no escopo. `Shared` é considerada uma feature de escopo global. Isso permite que os desenvolvedores localizem recursos globais mais facilmente e compreendam a estrutura geral do projeto de maneira intuitiva.
 
-Teoricamente poderiamos colocar o conteúdo dentro da pasta shared dentro de uma features sob mesmo nome `shared` => `features/shared`, porém é preferivel deixar na pasta raiz pelos motivos já citados.
-
+Embora o conteúdo de `shared` possa teoricamente ser colocado dentro de uma feature denominada `shared`, é preferível mantê-lo na pasta raiz por razões de clareza e acessibilidade.
 
 ## Modularização
 
-Ao utilizar `features` estamos separando recursos locais em espaços limitados, porém, isso não significa que devemos criar uma feature nova para cada pequeno escopo dentro da nossas aplicação. Por exemplo, caso tenhamos uma página simples, com apenas um componente, criar uma feature completa é desperdicio de tempo e espaço.
-
-Features são comumente criadas para autenticação, localização, comunicação e etc. São literalmente pequenos módulos contidos dentro da sua própria aplicação. Via de regra, tudo que não é global pertence a alguma feature, cabe a você escolher a feature correta. 
+A utilização de `features` permite a separação de recursos locais em módulos independentes. No entanto, isso não implica na necessidade de criar uma feature para cada pequeno escopo da aplicação. Features são usualmente criadas para funcionalidades mais robustas, como autenticação e comunicação.
 
 ```sh
 src/
 |-- features/
-|   |-- auth/     
-|   |-- customers/     
-|   |-- posts/    
+|   |-- auth/           // Autenticação
+|   |-- customers/      // Gestão de clientes
+|   |-- posts/          // Publicações e artigos
 |-- views/              
 |-- app.js
 ```
 
-Uma dica interessante é agrupar features de forma semelhate a que você agruparia rotas, onde `/auth` vira `features/auth`, `/customers` vira `features/customers` e assim por diante. Não é uma bala de prata, mas já é um começo.  
+Uma dica interessante é agrupar features de forma semelhate a que você agruparia rotas, onde `/auth` equivale `features/auth`, `/customers` vira `features/customers` e assim por diante.
 
-Outra coisa importante é quais pastas colocar dentro das features (incluindo shared). Nós temos que ter em mente o seguinte:
-- Shared, apenas de representar conteúdo global, ainda é uma feature;
-- Features, por serem locais, não devem possuir pastas que podem existir global;
-- Logo, shared deve conter recursos global que possuem uma contrapartida local. 
+### Considerações sobre `shared`:
 
-Eu sei, é confuso, mas é importante manter a consistencia sempre. Alguns exemplos de coisas que nunca vão dentro de features, por tanto, nunca dentro de shared.
-- `App.js` - É um recurso único e não compartilhavel.
-- `/config` - Arquivo de configuração da aplicação.
-- `/stores` - São globais por padrão, não existindo uma versão local aplicável às features
-- `/pages` - Também são globais por padrão, versões locais não são aconselhaveis devido ao ciclo de import/export.
-- `/services` - Lógica que não depende do estado interno da aplicação.
+- A pasta `shared` deve ser entendida como uma coleção de elementos de escopo global, mas com a característica estrutural de uma feature.
+- Ela serve como um repositório para componentes, hooks, utilidades e outros elementos que têm variantes específicas por feature, mas também necessitam de uma versão genérica acessível globalmente.
+- Isso significa que objetos globais que não possuem uma feature não devem ir na pasta shared por questões de consistência. 
 
-Features comuns:
-- `/components` - Facilmente o mais comum e provavelmente o principal motivo da criação de features
-- `/compounds` - Componentes complexos com alta modularidade. Por serem modulares, geralmente acabam sendo criados globalmente, porém, é uma estrutura que pode ser facilmente reaproveitada pare componentes especificos. 
-- `/container` - Wrapper lógico. Componente criado para abstrair a lógica de componentes filhos.
-- `/layout` - Wrapper para estilos. Componente criado para organizar a disposição de elementos.
-- `/hooks` - Hooks customizados. Abstrai a lógica de componentes em funções externas dependentes de estado
+### Diretrizes para Pastas em `features`:
 
-Uma coisa que você deve ter percebido é que `services` não vão dentro de features. Essa é uma escolha pessoal minha, baseada nas seguintes caracteristicas:
-- Services são singletons por natureza. Eles tem apenas uma unica instancia ao longo de toda a aplicação, o que os torna, em essencia, objetos globais.
-- Services fazem parte de outra camada. Enquanto components, compounds, containers, layout e hooks fazem parte da camada de aprensentação, services fazem parte da camada de aplicação. Camadas diferentes não devem ser misturadas. 
-- Services possuem sua própria lógica. Seus testes são diferentes, a forma que se comunica com o interior também. Agrupar services juntos é benefico para o seu próprio desenvolvimento, uma vez que eles trabalham de forma diferente do resto da aplicação
+- Pastas dentro de `features` devem ser exclusivas ao escopo local da feature, evitando duplicar a estrutura que é intrinsecamente global.
+- Recursos que são universais e não possuem contrapartes locais não devem ser colocados dentro de `features` ou `shared`.
 
-Existem varias e varias pastas que podem ir ou não dentro das features, cabe ao arquiteto decidir qual a abordagem mais correta. A recomendação é que sempre sejam objetos que façam parte da camada de apresentação e que possuam multiplas delimitações de escopo.
+### Exemplos de Pastas Globais:
 
-## Tipo de componentes
+- `App.js`: Ponto central da aplicação e por definição não é compartilhável.
+- `/config`: Contém as configurações gerais do aplicativo, não se destinando a ser subdividido por features.
+- `/stores`: Centraliza o estado global da aplicação, sem necessidade de instâncias locais por feature.
+- `/pages`: Define as páginas em nível de aplicação, uma estrutura que não é replicada localmente devido a preocupações com a clareza de import/export.
+- `/services`: Representa a lógica de negócio e interação com APIs externas ou outros serviços, operando fora da lógica de estado do UI.
 
-Componentes, por definição, são peças extremamente versáteis do desenvolvimento em qualquer framework frontend, isso quer dizer que há várias formas diferentes de obter o mesmo resultado e tecnicas para isso. Felizmente, a partir da repetição foram surgindo padrões de componentes, os quais passaram e ter própositos bem definidos.
+### Pastas Típicas dentro de `features`:
 
-### Componentes Comuns
+- `/components`: Principal pasta de uma feature, contendo elementos reutilizáveis e específicos do contexto.
+- `/compounds`: Inclui componentes complexos que, apesar de sua modularidade e potencial de reutilização global, podem ser especializados por feature.
+- `/containers`: Componentes que encapsulam a lógica e o estado para outros componentes filhos, segregando preocupações.
+- `/layouts`: Focados na estruturação visual e espacial dos componentes, sem envolver-se diretamente com a lógica de negócios.
+- `/hooks`: Custom hooks que encapsulam lógicas de estado ou efeitos secundários específicos da feature.
 
-Além desse, é claro, há o componente comum, da forma que conhecemos. Ele é especificamente eficaz em lidar com lógica simples e estilos. Ele geralmente serve como wrapper para outros componentes e elementos comuns do html. Pode ou não possuir estado.
+### Sobre `services`:
 
-### Compound Component
+- A decisão de não incluir `services` dentro de `features` é uma preferência pessoal, fundamentada nas seguintes características:
+    - **Singleton por natureza**: Uma única instância que permeia a aplicação, reforçando seu caráter global.
+    - **Pertencimento a outra camada**: Enquanto os elementos de `features` são da camada de apresentação, `services` fazem parte da camada de aplicação, devendo manter-se segregados para evitar a mistura de responsabilidades.
+    - **Lógica e testes específicos**: `services` têm uma natureza distinta, com testes e lógicas de comunicação que são melhor mantidos agrupados para otimizar o desenvolvimento e manutenção.
 
-Compound components são um padrão em React que permitem que vários componentes trabalhem juntos de forma implícita, compartilhando um estado comum. Essa técnica é útil quando temos um conjunto de componentes que devem ser usados juntos, como um `select` e `option`. O componente pai controla o estado compartilhado, e os componentes filhos se inscrevem nesse estado, permitindo uma comunicação indireta e controle por parte do componente pai.
+O arquiteto de software deve avaliar cuidadosamente a inclusão de pastas em `features`, recomendando-se a escolha de elementos que integrem a camada de apresentação e que demandem clara diferenciação de escopo. A consistência e a clareza devem ser as diretrizes norteadoras para facilitar a manutenção e escalabilidade do projeto.
 
-### Container Component
+## Definição de componentes
 
-O componente container lida principalmente com a lógica de negócios e o gerenciamento de estado da aplicação, delegando a renderização da parte visual para os componentes de apresentação. Eles são responsáveis ​​por buscar dados, manipular estados e implementar funções que alteram esses estados. Este padrão ajuda a separar as preocupações de lógica e UI, facilitando o teste e a manutenção.
+Os componentes são elementos fundamentais no desenvolvimento de interfaces em frameworks frontend, apresentando uma gama de padrões que se distinguem pelo propósito e pela aplicabilidade. Abaixo, segue uma revisão dos tipos de componentes com uma distinção mais clara entre suas nomenclaturas e funções.
 
-### Layout Component
+### Componentes de Apresentação (Common Components)
 
-Componentes de layout são aqueles que ajudam a organizar o espaço na interface do usuário. Eles não estão diretamente ligados à lógica de negócios, mas sim à estrutura visual da aplicação. Exemplos incluem componentes para grids, espaçamentos, alinhamento de elementos e outros aspectos estruturais do layout. Eles são usados para envolver outros componentes e auxiliar na criação de um design consistente e responsivo.
+**Definição e Uso**: Esses componentes são a base para a construção de interfaces. Eles gerenciam tarefas como renderização de UI, estilização e podem manter estado interno quando necessário. Sua responsabilidade principal é a exibição de elementos de UI e a interação com o usuário.
 
-### High Order Component
+**Características Distintivas**:
 
-Um High Order Component é uma técnica avançada em React para reutilizar a lógica de componentes. HOCs são funções que recebem um componente e retornam um novo componente com comportamento adicional. Eles são como funções puras em JavaScript e podem ser usados para adicionar funcionalidades como manipulação de erros, log de renderização, controle de acesso, e injeção de props, entre outras. Isso permite que os componentes sejam escritos de maneira mais declarativa e funcional.
+- Foco em elementos visuais e interatividade.
+- Podem ser estado-dependentes (stateful) ou independentes (stateless).
+- Geralmente servem como wrappers para elementos nativos de HTML e outros componentes de apresentação.
 
-### Hierarquia
+### Container Components (Componentes Container)
 
-Por definição não existe algum hierarquia comum para o React, ainda assim há conceitos como o design atomic que ditam uma ordem lógica de como os componentes devem ser usados. Resumidamente, ele descreve a seguinte divisão:
-1. **Átomos:**
-    - São os elementos básicos e indivisíveis da UI, como botões, ícones, inputs de texto e links.
-    - Exemplo: Um botão de 'enviar' em um formulário.
-2. **Moléculas:**
-    - Combinam múltiplos átomos para formar uma unidade funcional mais complexa.
-    - Exemplo: Um campo de formulário com um input de texto, um ícone e um botão de 'enviar'.
-3. **Organismos:**
-    - Agrupamentos de moléculas que funcionam juntos como parte de uma seção da interface.
-    - Exemplo: Uma barra de navegação completa, que inclui o logotipo da empresa, um menu de navegação (moléculas) e um campo de busca (outra molécula).
-4. **Templates:**
-    - Combinações de organismos que formam a estrutura de uma página, mas sem conteúdo final.
-    - Exemplo: O layout de uma página de blog, incluindo cabeçalho, conteúdo principal, barra lateral e rodapé, todos definidos em suas posições relativas.
-5. **Páginas:**
-    - Instâncias de templates preenchidos com conteúdo real, representando o que o usuário finalmente vê.
-    - Exemplo: Uma página de blog específica com o cabeçalho, o artigo real, imagens, comentários e rodapé.
+**Definição e Uso**: Containers são componentes que abstraem a gestão de lógica de negócios e estados da aplicação. Eles agem como intermediários entre a fonte de dados (como APIs) e os componentes de apresentação, focando na operacionalização dos dados.
 
-Por mais que seja uma boa separação de conceitos, ela peca em se adequar no uso comum do React. É algo novo, não uma simples evolução do que já existe. Para isso, eu sugiro a seguinte interpretação:
+**Características Distintivas**:
 
-1. Componentes Comuns (`components`)
-	1. Equivalem a atomos na sua forma mais básica
-	2. Podem representar moleculas quando necessário pouca personalização e controle 
-2. Components Compostos (`compounds`)
-	1. Caso necessário, podem representar moleculas
-	2. Equivalem a organismos em sua forma mais básica
-3. Containers (`layouts`e `containers`)
-	1. Equivalem a templates
-	2. Layout é encapsula estilo, container encapsula lógica
+- Separam a lógica de negócios da UI, promovendo a responsabilidade única.
+- Conectam-se a serviços e stores, manipulando dados e estados antes de passar para a UI.
 
-Com essa definição, podemos aplicar o design atomico, porém sem mudar a estrutura comum do React. Assim podemos impor controle sobre a hierarquia de componentes de forma previsivel. 
+### Layout Components (Componentes de Layout)
 
-Ainda há alguns pontos a serem explorados, como o que fazer caso um compound seja usado varias vezes de forma semelhante. Por mais que um layout seja capaz de abstrair a repetição, talvez não seja a melhor das formas. Fora isso, não existe uma restrição para uso de componentes de baixo nível, assim como uma página pode usar o template ela também pode usar um atomo. 
+**Definição e Uso**: Estes componentes concentram-se em estruturar e organizar o espaço da interface de usuário. Sua função é puramente estrutural, não contendo lógica de negócios, mas ajudando a manter um design responsivo e consistente.
 
-## Uso de componentes
+**Características Distintivas**:
 
-Acima já ficou claro o escopo de cada tipo componente de acordo com o design atomico, abaixo segue um guia com sugestões de acordo com a necessidade. 
+- Fornecem uma estrutura para outros componentes sem gerenciar estado ou lógica.
+- Exemplos incluem wrappers para grids, espaçamento e alinhamento.
 
-1. Botão
-	1. Component: Criado como o elemento mais básico com estilos e funcionalidades elementares como clicar.
-	2. Compound: Pode envolver um ícone ou um indicador de carregamento, combinando mais de um átomo.
-2. Input
-	1. Component: Campo de texto simples, com validações e estilos básicos.
-	2. Compound: Pode incluir uma label, ícone de validação ou mensagem de erro.
-3. Input Group
-	1. Component: Combina vários componentes, como um input, botão e ícone em uma única unidade funcional.
-	2. Compound: Pode fazer parte de um formulário de pesquisa mais complexo com diferentes tipos de inputs e botões.
-4. Form
-	1. Compound: Composto por vários componentes como inputs, botões e mensagens de erro que trabalham juntos para coletar informações do usuário.
-	2. Container: Em contextos mais amplos, pode ser parte de um template que define como o formulário interage com outros componentes da página.
-5. Card
-	1. Component: Pode conter um título, uma imagem e uma breve descrição ou tags.
-	2. Compound: Um card mais complexo pode incluir botões de ação, um slider de imagens ou um formulário de comentário.
-6. Table
-	1. Compound: Complexa por natureza, inclui átomos como botões e inputs, bem como cabeçalho de tabela, linhas e células.
-	2. Layout: Pode se transformar em um template quando combinada com outros organismos como filtros de pesquisa, paginação e controles.
-7. Navbar
-	1. Compounds: Uma barra de navegação com links (components) e dropdowns (compounds), e até mesmo um formulário de busca.
-	2. Layout: Quando integrado a um cabeçalho maior com branding e outros controles de navegação.
-8. Dashboard
-	1. Layout: Uma combinação de vários compound como gráficos, tabelas, e sumários.
-	2. Página: Quando preenchido com dados reais e utilizado dentro do contexto da aplicação.
+### Higher-Order Components (HOCs - Componentes de Ordem Superior)
 
-É importante notar que, apesar da navbar poder ser contruida usando apenas componentes, é recomendável usar um compound. Isso porque o dropdown também é um compound.
+**Definição e Uso**: HOCs são funções que aceitam um componente e retornam um novo componente com funcionalidades adicionais. Eles seguem o princípio de composição sobre herança para estender o comportamento dos componentes sem alterar sua implementação original.
 
-Um componente pode ser usado apenas por aqueles no mesmo nível ou em nível superior. Isso quer dizer que um compound não deve ser importado dentro de um component. Isso serve para manter a hierarquia limpa e bem ordenada.
+**Características Distintivas**:
+
+- Facilitam a reutilização de código e lógica comum entre componentes.
+- Permitem a adição de novos comportamentos, como manipulação de erros ou injeção de props, sem modificar o componente original.
+
+Cada um desses padrões de componentes tem seu lugar em um ecossistema React, ajudando desenvolvedores a criar interfaces claras, eficientes e mantíveis, respeitando os princípios de design como composição, reutilização e separação de preocupações.
 
 ## Nomenclatura
 
